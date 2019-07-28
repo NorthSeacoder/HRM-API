@@ -25,6 +25,8 @@
   file: <input name="file" type="file" />
   <button type="submit">upload</button>
 </form>
+{# 测试数据库#}
+<button type="submit" onclick="dbtest()">测试数据库</button>
 {#  #}
 </div>
 </body>
@@ -42,6 +44,23 @@ data.append('file',excel);
 fetch('http://localhost:7001/import',{
     method:"post",
     body:data,
+})
+}
+function dbtest(){
+    const data={
+        userName: 'mp',
+        password: '123',
+        sex: '男', //性别
+        name: '哈哈', //姓名
+        isAdmin: true, //是否是管理员
+    }
+    fetch('http://localhost:7001/api/employee/create',{
+    method:"post",
+    headers: {
+            'Content-Type': 'application/json',
+      },
+    body:JSON.stringify(data),
+    
 })
 }
 </script>

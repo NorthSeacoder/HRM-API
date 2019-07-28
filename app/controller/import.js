@@ -2,14 +2,19 @@
 /* eslint-disable*/
 const Controller = require('egg').Controller;
 const Excel = require('exceljs');
-const  tableOptions =require('../constant/tableOptions') 
+const {
+    detailOption
+} = require('../constant/tableOptions')
 // const fs = require('fs');
 // const path = require('path');
-
+const Modal = "employee"
 class submitController extends Controller {
     //适用于简单表格的导入，所以一般导入要先下载固定格式的excel表格才能正确解析
     async index() {
-        const { ctx } = this;
+        const {
+            ctx,
+            service
+        } = this;
         const file = ctx.request.files[0];
 
         // fs.exists(path.resolve(__dirname, '../public/绩效考核统计表 (1).xlsx') //绝对路径
@@ -17,14 +22,15 @@ class submitController extends Controller {
         //         console.log(exists ? 'it\'s there' : 'no passwd!');
         //     });
 
-        let dataArray = [];//最后得到的Json对象数组
+        let dataArray = []; //最后得到的Json对象数组
         let workbook = new Excel.Workbook();
         await workbook.xlsx.readFile(file.filepath) //绝对路径
-            .then(function () {
+            .then(async function () {
                 let worksheet = workbook.getWorksheet(1);
                 dataArray = changeRowsToDict(worksheet);
-                 console.log(JSON.stringify(dataArray));
-                ctx.body = dataArray;
+                // console.log(JSON.stringify(dataArray));
+                // ctx.body = dataArray;
+                ctx.body = await service[Modal].insertList(dataArray)
                 // console.log('异步');
             });
 
@@ -37,10 +43,8 @@ class submitController extends Controller {
             worksheet.eachRow(function (row, rowNumber) {
 
                 if (rowNumber == 1) {
-                    keys = row.values.map(value=>(tableOptions.find(item=>item.label===value)).prop
-                    );
-                }
-                else {
+                    keys = row.values.map(value => (detailOption.find(item => item.label === value)).prop);
+                } else {
                     let rowDict = cellValueToDict2(keys, row);
                     dataArray.push(rowDict);
                 }
@@ -60,10 +64,16 @@ class submitController extends Controller {
         /* keys: {id,name,phone}, rowValue：每一行的值数组， 执行次数3次 */
         function cellValueToDict2(keys, row) {
             let data = {};
-            row.eachCell({ includeEmpty: true }, function (cell, colNumber) {
+            row.eachCell({
+                includeEmpty: true
+            }, function (cell, colNumber) {
                 let value = cell.value;
-                // if (typeof value == "object") value = value.text;
-                data[keys[colNumber]] = value;
+                if (typeof value == "object") {
+                    if (value && !(value instanceof Date)) {
+                        value = JSON.stringify(value.result);
+                    }
+                }
+                data[keys[colNumber]] = value || '--';
             });
             return data;
         }

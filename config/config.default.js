@@ -4,7 +4,9 @@ module.exports = appInfo => {
   const config = exports = {};
 
   config.security = {
-    csrf: { enable: false },
+    csrf: {
+      enable: false
+    },
   };
   config.multipart = {
     mode: 'file',
@@ -25,6 +27,17 @@ module.exports = appInfo => {
 
   // add your config here
   config.middleware = [];
+
+  //egg-mongoose config
+  config.mongoose = {
+    url: 'mongodb://127.0.0.1/HRM_DATA_BASE',
+    options: {}
+  };
+
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH'
+  };
 
   return config;
 };
