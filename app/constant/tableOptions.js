@@ -203,5 +203,28 @@ module.exports = {
       prop: 'DimissionDate',
       type: String
     },
-  ]
+  ],
+  listOption:[{
+    label: '姓名',
+    prop: 'name',
+    type: String
+  },{
+    label: '状态',
+    prop: 'status',
+    type: String
+  },
+  {
+    label: '城市',
+    prop: 'city',
+    type: String
+  },{
+    label: '二级部门',
+    prop: '2department',
+    type: String
+  },{
+    label: '岗位',
+    prop: 'level',
+    type: String
+  },]
+
 }
